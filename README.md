@@ -1,6 +1,7 @@
 # Verso
 
 **A second-language reading companion for PDF and Word documents.**
+**https://e-reader-one.vercel.app/**
 
 Verso is a browser-based eReader built for people reading in a language
 they're still learning. Select any word or passage and get an instant
