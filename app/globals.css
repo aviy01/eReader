@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light — "reading paper" */
+    --background: 38 35% 95%;
+    --foreground: 224 28% 16%;
+
+    --card: 40 40% 98%;
+    --card-foreground: 224 28% 16%;
+
+    --popover: 40 45% 99%;
+    --popover-foreground: 224 28% 16%;
+
+    --primary: 226 40% 30%;
+    --primary-foreground: 40 35% 97%;
+
+    --secondary: 38 20% 90%;
+    --secondary-foreground: 224 28% 16%;
+
+    --muted: 38 20% 91%;
+    --muted-foreground: 224 12% 42%;
+
+    /* Highlighter gold — the vocabulary / highlight accent */
+    --accent: 38 78% 58%;
+    --accent-foreground: 224 30% 15%;
+
+    /* Vault sage — saved words, success states */
+    --vault: 140 22% 40%;
+    --vault-foreground: 40 35% 97%;
+
+    --destructive: 6 72% 51%;
+    --destructive-foreground: 40 35% 97%;
+
+    --border: 38 20% 85%;
+    --input: 38 20% 85%;
+    --ring: 226 40% 45%;
+
+    --sidebar: 38 30% 92%;
+    --sidebar-foreground: 224 28% 18%;
+    --sidebar-border: 38 20% 84%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Dark — soft graphite, not pure black */
+    --background: 0 0% 7%;
+    --foreground: 40 15% 92%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 40 15% 92%;
+
+    --popover: 0 0% 13%;
+    --popover-foreground: 40 15% 92%;
+
+    --primary: 226 55% 68%;
+    --primary-foreground: 224 30% 12%;
+
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 40 15% 92%;
+
+    --muted: 0 0% 16%;
+    --muted-foreground: 40 8% 65%;
+
+    --accent: 38 82% 62%;
+    --accent-foreground: 224 30% 12%;
+
+    --vault: 140 28% 55%;
+    --vault-foreground: 0 0% 10%;
+
+    --destructive: 6 70% 55%;
+    --destructive-foreground: 0 0% 10%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 226 55% 60%;
+
+    --sidebar: 0 0% 9%;
+    --sidebar-foreground: 40 12% 88%;
+    --sidebar-border: 0 0% 18%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Highlighter-gold text selection — ties reading & vocab features together */
+  ::selection {
+    background-color: hsl(var(--accent) / 0.45);
+    color: hsl(var(--foreground));
+  }
+
+  /* PDF pages render as a <canvas> image with an invisible, selectable text
+     layer positioned exactly on top of it (pdf.js's standard approach — the
+     glyphs you actually SEE come from the canvas, not this layer). The rule
+     above makes selected text opaque, which for this layer means its own
+     (subtly different) glyph rendering suddenly shows up stacked on top of
+     the canvas's glyphs — reading as a blurry "double" glyph. Keep this
+     layer's own text transparent even when selected so only the highlight
+     background shows, and the canvas glyphs underneath stay crisp. */
+  .textLayer ::selection {
+    color: transparent;
+  }
+
+  /* Slim, quiet scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.35);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.55);
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: hsl(var(--popover) / 0.72);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+}
+
+/* Typography for converted Word (.docx) documents — kept out of @layer so
+   specificity beats Tailwind's base reset without needing !important. */
+.docx-content {
+  font-family: var(--font-lora), serif;
+  line-height: 1.75;
+  color: hsl(var(--foreground));
+}
+.docx-content > * + * {
+  margin-top: 1em;
+}
+.docx-content h1,
+.docx-content h2,
+.docx-content h3 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 1.6em;
+}
+.docx-content h1 {
+  font-size: 1.6em;
+}
+.docx-content h2 {
+  font-size: 1.35em;
+}
+.docx-content h3 {
+  font-size: 1.15em;
+}
+.docx-content strong {
+  font-weight: 700;
+}
+.docx-content em {
+  font-style: italic;
+}
+.docx-content ul,
+.docx-content ol {
+  padding-left: 1.4em;
+}
+.docx-content ul {
+  list-style: disc;
+}
+.docx-content ol {
+  list-style: decimal;
+}
+.docx-content a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.docx-content blockquote {
+  border-left: 3px solid hsl(var(--accent));
+  padding-left: 1em;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+.docx-content img {
+  max-width: 100%;
+  border-radius: var(--radius);
+}
+.docx-content table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.docx-content td,
+.docx-content th {
+  border: 1px solid hsl(var(--border));
+  padding: 0.5em 0.75em;
+}
