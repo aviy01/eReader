@@ -15,11 +15,13 @@ import { useDocument } from "@/lib/document-context";
 import { useFileOpener } from "@/lib/use-file-opener";
 import { useReaderUI } from "@/lib/reader-ui-context";
 import { useSelectionPopup } from "@/lib/use-selection-popup";
+import type { SelectionPopupState } from "@/lib/use-selection-popup";
 import { Button } from "@/components/ui/button";
 import { PdfPage } from "@/components/reader/pdf-page";
 import { DocxPage } from "@/components/reader/docx-page";
 import { TranslatePopup } from "@/components/reader/translate-popup";
 import { TranslatePageDialog } from "@/components/reader/translate-page-dialog";
+import { LassoBox } from "@/components/reader/lasso-box";
 
 const TURN_DURATION = 0.55;
 
@@ -82,11 +84,39 @@ export function DocumentStage() {
     isTurningPage,
     setIsTurningPage,
     sidebarWidth,
+    lassoMode,
+    setLassoMode,
   } = useReaderUI();
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const { popup, popupRef, handleMouseUp, close } =
     useSelectionPopup(containerRef);
+
+  // Rectangle-select translate tool: a draggable/resizable box the person
+  // can place over any text to translate whatever falls inside it, as an
+  // alternative to click-and-drag word selection.
+  const [lassoPopup, setLassoPopup] = React.useState<SelectionPopupState | null>(
+    null
+  );
+  const lassoPopupRef = React.useRef<HTMLDivElement | null>(null);
+  const closeLassoPopup = React.useCallback(() => setLassoPopup(null), []);
+  const closeLassoTool = React.useCallback(() => {
+    setLassoMode(false);
+    setLassoPopup(null);
+  }, [setLassoMode]);
+
+  // Outside clicks close the result card but leave the box itself in place
+  // (it stops propagation on its own mousedown, same pattern as the normal
+  // selection popup) so the person can immediately drag/resize and retry.
+  React.useEffect(() => {
+    if (!lassoPopup) return;
+    function handleOutsideMouseDown() {
+      setLassoPopup(null);
+    }
+    document.addEventListener("mousedown", handleOutsideMouseDown);
+    return () =>
+      document.removeEventListener("mousedown", handleOutsideMouseDown);
+  }, [lassoPopup]);
 
   // The page that is mid-turn (rendered on top, curling away to reveal the
   // freshly-current page underneath). Detected by watching currentPage
@@ -202,6 +232,27 @@ export function DocumentStage() {
             />
           )}
         </AnimatePresence>
+        <AnimatePresence>
+          {lassoMode && (
+            <LassoBox
+              key="lasso-box"
+              containerRef={containerRef}
+              sidebarWidth={sidebarWidth}
+              onTranslate={setLassoPopup}
+              onClose={closeLassoTool}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {lassoPopup && (
+            <TranslatePopup
+              key={`lasso-${lassoPopup.text}-${lassoPopup.rect.top}-${lassoPopup.rect.left}`}
+              selection={lassoPopup}
+              popupRef={lassoPopupRef}
+              onClose={closeLassoPopup}
+            />
+          )}
+        </AnimatePresence>
         <TranslatePageDialog
           open={translateDialogOpen}
           onOpenChange={setTranslateDialogOpen}
@@ -229,6 +280,27 @@ export function DocumentStage() {
               selection={popup}
               popupRef={popupRef}
               onClose={close}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {lassoMode && (
+            <LassoBox
+              key="lasso-box"
+              containerRef={containerRef}
+              sidebarWidth={sidebarWidth}
+              onTranslate={setLassoPopup}
+              onClose={closeLassoTool}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {lassoPopup && (
+            <TranslatePopup
+              key={`lasso-${lassoPopup.text}-${lassoPopup.rect.top}-${lassoPopup.rect.left}`}
+              selection={lassoPopup}
+              popupRef={lassoPopupRef}
+              onClose={closeLassoPopup}
             />
           )}
         </AnimatePresence>
