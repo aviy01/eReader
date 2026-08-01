@@ -201,15 +201,15 @@ function LanguagePicker() {
       <p className="mb-1.5 mt-2.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
         Translate into
       </p>
-      <div className="flex gap-1.5">
-        <div className="w-1/2">
+      <div className="flex gap-1">
+        <div className="w-[54%]">
           <label
             htmlFor="first-language-select"
-            className="mb-0.5 flex items-center gap-1 text-[10px] text-muted-foreground/80"
+            className="mb-0.5 flex items-center gap-1 whitespace-nowrap text-[10px] text-muted-foreground/80"
           >
-            1st &mdash; definition
+            Word definition
             {nativeFollowsReading && (
-              <span className="rounded-sm bg-muted px-1 py-px text-[9px] font-medium leading-none text-muted-foreground">
+              <span className="shrink-0 rounded-sm bg-muted px-1 py-px text-[9px] font-medium leading-none text-muted-foreground">
                 auto
               </span>
             )}
@@ -228,12 +228,12 @@ function LanguagePicker() {
             ))}
           </select>
         </div>
-        <div className="w-1/2">
+        <div className="w-[46%]">
           <label
             htmlFor="second-language-select"
-            className="mb-0.5 block text-[10px] text-muted-foreground/80"
+            className="mb-0.5 block whitespace-nowrap text-[10px] text-muted-foreground/80"
           >
-            2nd &mdash; meaning
+            Word meaning
           </label>
           <select
             id="second-language-select"
