@@ -8,6 +8,7 @@ import {
   Languages,
   Minus,
   Plus,
+  ScanSearch,
   Upload,
   X,
 } from "lucide-react";
@@ -35,7 +36,8 @@ export function TopNavbar() {
   const { active, nextPage, prevPage, zoomIn, zoomOut, closeDocument } =
     useDocument();
   const { pickPdf, pickDocx, hiddenInputs } = useFileOpener();
-  const { setTranslateDialogOpen, isTurningPage } = useReaderUI();
+  const { setTranslateDialogOpen, isTurningPage, lassoMode, setLassoMode } =
+    useReaderUI();
 
   const hasDoc = active?.status === "ready";
   const isPaginated = hasDoc && active?.kind === "pdf";
@@ -121,6 +123,25 @@ export function TopNavbar() {
 
       {/* Right: translate + upload + theme */}
       <div className="flex items-center gap-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={lassoMode ? "accent" : "outline"}
+              size="sm"
+              className="gap-1.5"
+              disabled={!hasDoc}
+              aria-pressed={lassoMode}
+              onClick={() => setLassoMode(!lassoMode)}
+            >
+              <ScanSearch className="h-3.5 w-3.5" />
+              {lassoMode ? "Selecting…" : "Translate word"}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            Draw a box over a word to translate it
+          </TooltipContent>
+        </Tooltip>
+
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
