@@ -11,6 +11,8 @@ interface ReaderUIContextValue {
   setIsTurningPage: (turning: boolean) => void;
   sidebarWidth: number;
   setSidebarWidth: (width: number) => void;
+  lassoMode: boolean;
+  setLassoMode: (active: boolean) => void;
 }
 
 const ReaderUIContext = React.createContext<ReaderUIContextValue | null>(
@@ -22,6 +24,7 @@ export function ReaderUIProvider({ children }: { children: React.ReactNode }) {
   const [pageText, setPageText] = React.useState<string | null>(null);
   const [isTurningPage, setIsTurningPage] = React.useState(false);
   const [sidebarWidth, setSidebarWidth] = React.useState(288);
+  const [lassoMode, setLassoMode] = React.useState(false);
 
   const value = React.useMemo(
     () => ({
@@ -33,8 +36,10 @@ export function ReaderUIProvider({ children }: { children: React.ReactNode }) {
       setIsTurningPage,
       sidebarWidth,
       setSidebarWidth,
+      lassoMode,
+      setLassoMode,
     }),
-    [translateDialogOpen, pageText, isTurningPage, sidebarWidth]
+    [translateDialogOpen, pageText, isTurningPage, sidebarWidth, lassoMode]
   );
 
   return (
