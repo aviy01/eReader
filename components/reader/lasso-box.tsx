@@ -176,6 +176,16 @@ export function LassoBox({
     });
   }
 
+  function handleBoxPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    // Belt-and-suspenders: only start a move-drag when the pointerdown
+    // lands on the box's own background element — never on the toolbar,
+    // its buttons, or a resize handle. The toolbar already stops
+    // propagation, but gating on the actual target here means a click on
+    // "Translate" can never be swallowed into a drag, full stop.
+    if (e.target !== e.currentTarget) return;
+    startDrag("move")(e);
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.92 }}
@@ -193,7 +203,7 @@ export function LassoBox({
       }}
       className="cursor-move rounded-md border-2 border-dashed border-accent bg-accent/10 shadow-popover"
       onMouseDown={(e) => e.stopPropagation()}
-      onPointerDown={startDrag("move")}
+      onPointerDown={handleBoxPointerDown}
     >
       {/* Resize handles */}
       {HANDLES.map((h) => (
@@ -207,7 +217,7 @@ export function LassoBox({
 
       {/* Floating toolbar */}
       <div
-        className="absolute -top-9 left-0 flex items-center gap-1 whitespace-nowrap rounded-md border border-border bg-background/95 px-1.5 py-1 shadow-popover backdrop-blur-md"
+        className="absolute -top-9 left-0 z-20 flex cursor-default items-center gap-1 whitespace-nowrap rounded-md border border-border bg-background/95 px-1.5 py-1 shadow-popover backdrop-blur-md"
         onMouseDown={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
       >
@@ -220,7 +230,7 @@ export function LassoBox({
           aria-label="Translate words inside the shape"
           disabled={wordCount === 0}
           onClick={handleTranslate}
-          className="flex h-6 shrink-0 items-center gap-1 rounded-full bg-accent px-2.5 text-[11px] font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90 disabled:pointer-events-none disabled:opacity-40"
+          className="flex h-6 shrink-0 cursor-pointer items-center gap-1 rounded-full bg-accent px-2.5 text-[11px] font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90 disabled:pointer-events-none disabled:opacity-40"
         >
           <Languages className="h-3 w-3" />
           Translate
@@ -229,7 +239,7 @@ export function LassoBox({
           type="button"
           aria-label="Close translate shape"
           onClick={onClose}
-          className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <X className="h-3.5 w-3.5" />
         </button>
